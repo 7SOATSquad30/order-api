@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-api
+  labels:
+    app: order-api
+spec:
+  selector:
+    matchLabels:
+      app: order-api
+  template:
+    metadata:
+      labels:
+        app: order-api
+    spec:
+      containers:
+        - name: app
+          env:
+            - name: DB_URL
+              value: "jdbc:postgresql://$DB_HOSTNAME:5432/$DB_DATABASE"
+            - name: DB_USERNAME
+              value: "$DB_USERNAME"
+            - name: DB_PASSWORD
+              value: "$DB_PASSWORD"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "$ENVIRONMENT"
+          image: fiap7soat30/order-api:$VERSION
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 8080
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 180
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 2
+          readinessProbe:
+            httpGet:
+              path: /swagger-ui/index.html
+              port: 8080
+            initialDelaySeconds: 240
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 2
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "150Mi"
+            limits:
+              cpu: "150m"
+              memory: "300Mi"
+      restartPolicy: Always
