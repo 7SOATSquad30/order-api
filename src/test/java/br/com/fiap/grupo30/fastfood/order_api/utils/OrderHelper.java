@@ -18,25 +18,19 @@ public class OrderHelper {
         return createDefaultOrderWithId(id, customer, product).toDTO();
     }
 
-    public static Order createDefaultOrderWithId(
-            Long id, Customer customer, Product product) {
-        return createOrder(
-                id, customer, product);
+    public static Order createDefaultOrderWithId(Long id, Customer customer, Product product) {
+        return createOrder(id, customer, product);
     }
 
     public static Order createOrder(Long id, Customer customer, Product product) {
         Order order = Order.createFor(customer);
-        order.addProduct(
-                product, DEFAULT_ORDERITEM_QUANTITY);
+        order.addProduct(product, DEFAULT_ORDERITEM_QUANTITY);
         order.setId(id);
         return order;
     }
 
     public static OrderItem createOrderItem(Product product) {
-        OrderItem orderItem =
-                new OrderItem(
-                        product,
-                        DEFAULT_ORDERITEM_QUANTITY);
+        OrderItem orderItem = new OrderItem(product, DEFAULT_ORDERITEM_QUANTITY);
         return orderItem;
     }
 
