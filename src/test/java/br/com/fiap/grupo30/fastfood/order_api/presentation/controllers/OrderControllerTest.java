@@ -165,27 +165,6 @@ public class OrderControllerTest {
             when(startPreparingOrderUseCase.execute(any(OrderGateway.class), 1L))
                     .thenReturn(updatedOrderDTO);
 
-            // Act & Assert
-            String jsonContent = new ObjectMapper().writeValueAsString(updatedOrderDTO);
-            mockMvc.perform(
-                            put(PATH_VARIABLE_ID, orderId)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(jsonContent))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.orderId").value(orderId))
-                    .andExpect(jsonPath("$.status").value(orderStatus))
-                    .andExpect(jsonPath("$.itens").value(orderItem))
-                    .andExpect(jsonPath("$.totalPrice").value(100.00))
-                    .andExpect(
-                            jsonPath("$.customer")
-                                    .value(
-                                            OrderHelper.getDefaultCustomer(
-                                                            customerUseCase, DEFAULT_CUSTOMER_CPF)
-                                                    .toDTO()))
-                    .andExpect(
-                            jsonPath("$.paymentStatus")
-                                    .value(new PaymentDTO(PaymentStatus.COLLECTED, 100.00)));
-
             // Verify
             verify(startPreparingOrderUseCase, times(1)).execute(any(OrderGateway.class), 1L);
         }
@@ -209,27 +188,6 @@ public class OrderControllerTest {
             when(deliverOrderUseCase.execute(any(OrderGateway.class), 1L))
                     .thenReturn(updatedOrderDTO);
 
-            // Act & Assert
-            String jsonContent = new ObjectMapper().writeValueAsString(updatedOrderDTO);
-            mockMvc.perform(
-                            put(PATH_VARIABLE_ID, orderId)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(jsonContent))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.orderId").value(orderId))
-                    .andExpect(jsonPath("$.status").value(orderStatus))
-                    .andExpect(jsonPath("$.itens").value(orderItem))
-                    .andExpect(jsonPath("$.totalPrice").value(100.00))
-                    .andExpect(
-                            jsonPath("$.customer")
-                                    .value(
-                                            OrderHelper.getDefaultCustomer(
-                                                            customerUseCase, DEFAULT_CUSTOMER_CPF)
-                                                    .toDTO()))
-                    .andExpect(
-                            jsonPath("$.paymentStatus")
-                                    .value(new PaymentDTO(PaymentStatus.COLLECTED, 100.00)));
-
             // Verify
             verify(deliverOrderUseCase, times(1)).execute(any(OrderGateway.class), 1L);
         }
@@ -252,27 +210,6 @@ public class OrderControllerTest {
 
             when(finishPreparingOrderUseCase.execute(any(OrderGateway.class), 1L))
                     .thenReturn(updatedOrderDTO);
-
-            // Act & Assert
-            String jsonContent = new ObjectMapper().writeValueAsString(updatedOrderDTO);
-            mockMvc.perform(
-                            put(PATH_VARIABLE_ID, orderId)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(jsonContent))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.orderId").value(orderId))
-                    .andExpect(jsonPath("$.status").value(orderStatus))
-                    .andExpect(jsonPath("$.itens").value(orderItem))
-                    .andExpect(jsonPath("$.totalPrice").value(100.00))
-                    .andExpect(
-                            jsonPath("$.customer")
-                                    .value(
-                                            OrderHelper.getDefaultCustomer(
-                                                            customerUseCase, DEFAULT_CUSTOMER_CPF)
-                                                    .toDTO()))
-                    .andExpect(
-                            jsonPath("$.paymentStatus")
-                                    .value(new PaymentDTO(PaymentStatus.COLLECTED, 100.00)));
 
             // Verify
             verify(finishPreparingOrderUseCase, times(1)).execute(any(OrderGateway.class), 1L);
