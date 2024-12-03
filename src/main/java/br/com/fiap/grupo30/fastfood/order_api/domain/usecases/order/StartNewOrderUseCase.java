@@ -8,7 +8,9 @@ import br.com.fiap.grupo30.fastfood.order_api.infrastructure.configuration.Const
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.gateways.OrderGateway;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.InvalidCpfException;
+import org.springframework.stereotype.Component;
 
+@Component
 public class StartNewOrderUseCase {
 
     public OrderDTO execute(

@@ -7,7 +7,9 @@ import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderD
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.InvalidOrderStatusException;
 import java.util.List;
 import java.util.Locale;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ListOrdersByStatusUseCase {
 
     public List<OrderDTO> execute(OrderGateway orderGateway, String status) {

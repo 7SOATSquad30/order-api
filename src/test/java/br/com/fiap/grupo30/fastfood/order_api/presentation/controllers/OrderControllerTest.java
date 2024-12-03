@@ -20,7 +20,10 @@ import br.com.fiap.grupo30.fastfood.order_api.infrastructure.gateways.OrderGatew
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderItemDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.PaymentDTO;
+import br.com.fiap.grupo30.fastfood.order_api.utils.CustomerHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.OrderHelper;
+import br.com.fiap.grupo30.fastfood.order_api.utils.ProductHelper;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -28,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -37,8 +39,8 @@ public class OrderControllerTest {
 
     private MockMvc mockMvc;
 
-    private final CustomerUseCase customerUseCase;
-    private final ProductUseCase productUseCase;
+    @Mock private CustomerUseCase customerUseCase;
+    @Mock private ProductUseCase productUseCase;
     private static final String DEFAULT_CUSTOMER_CPF = "29375235017";
     @Mock private GetOrderUseCase getOrderUseCase;
     @Mock private StartNewOrderUseCase startNewOrderUseCase;
@@ -49,12 +51,6 @@ public class OrderControllerTest {
     @InjectMocks private OrderController orderController;
 
     private static final String PATH_VARIABLE_ID = "/orders/{id}";
-
-    @Autowired
-    public OrderControllerTest(CustomerUseCase customerUseCase, ProductUseCase productUseCase) {
-        this.customerUseCase = customerUseCase;
-        this.productUseCase = productUseCase;
-    }
 
     @BeforeEach
     void setUp() {
@@ -69,11 +65,11 @@ public class OrderControllerTest {
             // Arrange
             Long orderId = 1L;
             OrderDTO orderDTO =
-                    OrderHelper.createDefaultOrderDTOWithId(1L, customerUseCase, productUseCase);
+                    OrderHelper.createDefaultOrderDTOWithId(1L, CustomerHelper.valid(), ProductHelper.validProduct());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
-                            DEFAULT_CUSTOMER_CPF))
+                            eq(DEFAULT_CUSTOMER_CPF)))
                     .thenReturn(orderDTO);
 
             // Act & Assert
@@ -97,17 +93,17 @@ public class OrderControllerTest {
         void shouldStartNewOrderAndReturn201() throws Exception {
             // Arrange
             OrderDTO orderDTO =
-                    OrderHelper.createDefaultOrderDTOWithId(1L, customerUseCase, productUseCase);
+                    OrderHelper.createDefaultOrderDTOWithId(1L, CustomerHelper.valid(), ProductHelper.validProduct());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
-                            DEFAULT_CUSTOMER_CPF))
+                            eq(DEFAULT_CUSTOMER_CPF)))
                     .thenReturn(orderDTO);
 
             // Act & Assert
             String jsonContent = new ObjectMapper().writeValueAsString(orderDTO);
             mockMvc.perform(
-                            post("/order")
+                            post("/orders")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(jsonContent))
                     .andExpect(status().isCreated())
@@ -118,19 +114,19 @@ public class OrderControllerTest {
                     .execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
-                            DEFAULT_CUSTOMER_CPF);
+                            eq(DEFAULT_CUSTOMER_CPF));
         }
 
         @Test
         void shouldInvokeStartNewOrderUseCase() throws Exception {
             // Arrange
             OrderDTO orderDTO =
-                    OrderHelper.createDefaultOrderDTOWithId(1L, customerUseCase, productUseCase);
+                    OrderHelper.createDefaultOrderDTOWithId(1L, CustomerHelper.valid(), ProductHelper.validProduct());
 
             // Act & Assert
             String jsonContent = new ObjectMapper().writeValueAsString(orderDTO);
             mockMvc.perform(
-                            post("/order")
+                            post("/orders")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(jsonContent))
                     .andReturn();
@@ -140,7 +136,7 @@ public class OrderControllerTest {
                     .execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
-                            DEFAULT_CUSTOMER_CPF);
+                            eq(DEFAULT_CUSTOMER_CPF));
         }
     }
 
@@ -150,7 +146,7 @@ public class OrderControllerTest {
         void shouldStartPreperingOrderAndReturn200() throws Exception {
             // Arrange
             Long orderId = 1L;
-            OrderItemDTO[] orderItem = {OrderHelper.createOrderItem(productUseCase).toDTO()};
+            OrderItemDTO[] orderItem = {OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()};
             OrderStatus orderStatus = OrderStatus.PREPARING;
             OrderDTO updatedOrderDTO =
                     OrderHelper.createUpdatedOrderDTO(
@@ -158,22 +154,23 @@ public class OrderControllerTest {
                             orderStatus,
                             orderItem,
                             100.00,
-                            OrderHelper.getDefaultCustomer(customerUseCase, DEFAULT_CUSTOMER_CPF)
-                                    .toDTO(),
+                            CustomerHelper.valid().toDTO(),
                             new PaymentDTO(PaymentStatus.COLLECTED, 100.00));
 
-            when(startPreparingOrderUseCase.execute(any(OrderGateway.class), 1L))
+            when(startPreparingOrderUseCase.execute(any(OrderGateway.class), eq(1L)))
                     .thenReturn(updatedOrderDTO);
 
+            orderController.startPreparingOrder(orderId);
+
             // Verify
-            verify(startPreparingOrderUseCase, times(1)).execute(any(OrderGateway.class), 1L);
+            verify(startPreparingOrderUseCase, times(1)).execute(any(OrderGateway.class), eq(1L));
         }
 
         @Test
         void shouldDeliverOrderAndReturn200() throws Exception {
             // Arrange
             Long orderId = 1L;
-            OrderItemDTO[] orderItem = {OrderHelper.createOrderItem(productUseCase).toDTO()};
+            OrderItemDTO[] orderItem = {OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()};
             OrderStatus orderStatus = OrderStatus.DELIVERED;
             OrderDTO updatedOrderDTO =
                     OrderHelper.createUpdatedOrderDTO(
@@ -181,22 +178,23 @@ public class OrderControllerTest {
                             orderStatus,
                             orderItem,
                             100.00,
-                            OrderHelper.getDefaultCustomer(customerUseCase, DEFAULT_CUSTOMER_CPF)
-                                    .toDTO(),
+                            CustomerHelper.valid().toDTO(),
                             new PaymentDTO(PaymentStatus.COLLECTED, 100.00));
 
-            when(deliverOrderUseCase.execute(any(OrderGateway.class), 1L))
+            when(deliverOrderUseCase.execute(any(OrderGateway.class), eq(1L)))
                     .thenReturn(updatedOrderDTO);
 
+            orderController.deliverOrder(orderId);
+
             // Verify
-            verify(deliverOrderUseCase, times(1)).execute(any(OrderGateway.class), 1L);
+            verify(deliverOrderUseCase, times(1)).execute(any(OrderGateway.class), eq(1L));
         }
 
         @Test
         void shouldFinishPreparingOrderAndReturn200() throws Exception {
             // Arrange
             Long orderId = 1L;
-            OrderItemDTO[] orderItem = {OrderHelper.createOrderItem(productUseCase).toDTO()};
+            OrderItemDTO[] orderItem = {OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()};
             OrderStatus orderStatus = OrderStatus.READY;
             OrderDTO updatedOrderDTO =
                     OrderHelper.createUpdatedOrderDTO(
@@ -204,15 +202,16 @@ public class OrderControllerTest {
                             orderStatus,
                             orderItem,
                             100.00,
-                            OrderHelper.getDefaultCustomer(customerUseCase, DEFAULT_CUSTOMER_CPF)
-                                    .toDTO(),
+                            CustomerHelper.valid().toDTO(),
                             new PaymentDTO(PaymentStatus.COLLECTED, 100.00));
 
-            when(finishPreparingOrderUseCase.execute(any(OrderGateway.class), 1L))
+            when(finishPreparingOrderUseCase.execute(any(OrderGateway.class), eq(1L)))
                     .thenReturn(updatedOrderDTO);
 
+            orderController.finishPreparingOrder(orderId);
+
             // Verify
-            verify(finishPreparingOrderUseCase, times(1)).execute(any(OrderGateway.class), 1L);
+            verify(finishPreparingOrderUseCase, times(1)).execute(any(OrderGateway.class), eq(1L));
         }
     }
 }

@@ -2,8 +2,10 @@ package br.com.fiap.grupo30.fastfood.order_api.domain.usecases.product;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Product;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+@Component
 public class ProductUseCase {
 
     public Product findProductById(Long id) {

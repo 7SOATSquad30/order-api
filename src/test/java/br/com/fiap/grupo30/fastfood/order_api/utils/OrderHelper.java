@@ -5,52 +5,39 @@ import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Customer;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Order;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.OrderItem;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Product;
-import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.customer.CustomerUseCase;
-import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.product.ProductUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.CustomerDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderItemDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.PaymentDTO;
 
 public class OrderHelper {
-
-    private static final Long DEFAULT_PRODUCT_ID = 1L;
     private static final Long DEFAULT_ORDERITEM_QUANTITY = 1L;
-    private static final String DEFAULT_CUSTOMER_CPF = "29375235017";
 
     public static OrderDTO createDefaultOrderDTOWithId(
-            Long id, CustomerUseCase customerUseCase, ProductUseCase productUseCase) {
-        return createDefaultOrderWithId(id, customerUseCase, productUseCase).toDTO();
+            Long id, Customer customer, Product product) {
+        return createDefaultOrderWithId(id, customer, product).toDTO();
     }
 
     public static Order createDefaultOrderWithId(
-            Long id, CustomerUseCase customerUseCase, ProductUseCase productUseCase) {
+            Long id, Customer customer, Product product) {
         return createOrder(
-                id, getDefaultCustomer(customerUseCase, DEFAULT_CUSTOMER_CPF), productUseCase);
+                id, customer, product);
     }
 
-    public static Order createOrder(Long id, Customer customer, ProductUseCase productUseCase) {
+    public static Order createOrder(Long id, Customer customer, Product product) {
         Order order = Order.createFor(customer);
         order.addProduct(
-                getDefaultProduct(productUseCase, DEFAULT_PRODUCT_ID), DEFAULT_ORDERITEM_QUANTITY);
+                product, DEFAULT_ORDERITEM_QUANTITY);
         order.setId(id);
         return order;
     }
 
-    public static OrderItem createOrderItem(ProductUseCase productUseCase) {
+    public static OrderItem createOrderItem(Product product) {
         OrderItem orderItem =
                 new OrderItem(
-                        getDefaultProduct(productUseCase, DEFAULT_PRODUCT_ID),
+                        product,
                         DEFAULT_ORDERITEM_QUANTITY);
         return orderItem;
-    }
-
-    public static Product getDefaultProduct(ProductUseCase productUseCase, long productId) {
-        return productUseCase.findProductById(productId);
-    }
-
-    public static Customer getDefaultCustomer(CustomerUseCase customerUseCase, String cpf) {
-        return customerUseCase.findCustomerByCpf(cpf);
     }
 
     public static OrderDTO createUpdatedOrderDTO(
