@@ -23,7 +23,6 @@ import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.Paymen
 import br.com.fiap.grupo30.fastfood.order_api.utils.CustomerHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.OrderHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.ProductHelper;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -65,7 +64,8 @@ public class OrderControllerTest {
             // Arrange
             Long orderId = 1L;
             OrderDTO orderDTO =
-                    OrderHelper.createDefaultOrderDTOWithId(1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
@@ -93,7 +93,8 @@ public class OrderControllerTest {
         void shouldStartNewOrderAndReturn201() throws Exception {
             // Arrange
             OrderDTO orderDTO =
-                    OrderHelper.createDefaultOrderDTOWithId(1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
@@ -121,7 +122,8 @@ public class OrderControllerTest {
         void shouldInvokeStartNewOrderUseCase() throws Exception {
             // Arrange
             OrderDTO orderDTO =
-                    OrderHelper.createDefaultOrderDTOWithId(1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
 
             // Act & Assert
             String jsonContent = new ObjectMapper().writeValueAsString(orderDTO);
@@ -146,7 +148,9 @@ public class OrderControllerTest {
         void shouldStartPreperingOrderAndReturn200() throws Exception {
             // Arrange
             Long orderId = 1L;
-            OrderItemDTO[] orderItem = {OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()};
+            OrderItemDTO[] orderItem = {
+                OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()
+            };
             OrderStatus orderStatus = OrderStatus.PREPARING;
             OrderDTO updatedOrderDTO =
                     OrderHelper.createUpdatedOrderDTO(
@@ -170,7 +174,9 @@ public class OrderControllerTest {
         void shouldDeliverOrderAndReturn200() throws Exception {
             // Arrange
             Long orderId = 1L;
-            OrderItemDTO[] orderItem = {OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()};
+            OrderItemDTO[] orderItem = {
+                OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()
+            };
             OrderStatus orderStatus = OrderStatus.DELIVERED;
             OrderDTO updatedOrderDTO =
                     OrderHelper.createUpdatedOrderDTO(
@@ -194,7 +200,9 @@ public class OrderControllerTest {
         void shouldFinishPreparingOrderAndReturn200() throws Exception {
             // Arrange
             Long orderId = 1L;
-            OrderItemDTO[] orderItem = {OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()};
+            OrderItemDTO[] orderItem = {
+                OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()
+            };
             OrderStatus orderStatus = OrderStatus.READY;
             OrderDTO updatedOrderDTO =
                     OrderHelper.createUpdatedOrderDTO(

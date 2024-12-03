@@ -8,6 +8,7 @@ public class CustomerHelper {
 
     public static Customer valid() {
         Long customerId = (long) (Math.random() * 1000000000);
-        return new Customer(customerId, "João", new CPF(DEFAULT_CUSTOMER_CPF), "example@example.com");
+        return new Customer(
+                customerId, "João", new CPF(DEFAULT_CUSTOMER_CPF), "example@example.com");
     }
 }

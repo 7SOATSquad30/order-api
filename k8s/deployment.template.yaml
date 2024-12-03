@@ -22,6 +22,12 @@ spec:
               value: "$DB_USERNAME"
             - name: DB_PASSWORD
               value: "$DB_PASSWORD"
+            - name: PRODUCTS_API_ENDPOINT
+              value: "$PRODUCTS_API_ENDPOINT"
+            - name: CUSTOMER_API_ENDPOINT
+              value: "$CUSTOMER_API_ENDPOINT"
+            - name: PAYMENTS_API_ENDPOINT
+              value: "$PAYMENTS_API_ENDPOINT"
             - name: SPRING_PROFILES_ACTIVE
               value: "$ENVIRONMENT"
           image: fiap7soat30/order-api:$VERSION
