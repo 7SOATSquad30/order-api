@@ -9,7 +9,7 @@ COPY . .
 
 # Build application Java
 RUN gradle :spotlessApply
-RUN gradle build
+RUN gradle clean assemble
 
 # Copy the built JAR file to the root directory
 RUN cp build/libs/order-api-0.0.1-SNAPSHOT.jar app.jar
