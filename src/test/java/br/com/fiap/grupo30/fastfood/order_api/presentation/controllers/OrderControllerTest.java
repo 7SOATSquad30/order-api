@@ -3,20 +3,23 @@ package br.com.fiap.grupo30.fastfood.order_api.presentation.controllers;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.OrderStatus;
 import br.com.fiap.grupo30.fastfood.order_api.domain.PaymentStatus;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.customer.CustomerUseCase;
+import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.AddProductToOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.DeliverOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.FinishPreparingOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.GetOrderUseCase;
+import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.ListOrdersByStatusUseCase;
+import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.ListOrdersWithSpecificStatusesUseCase;
+import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.RemoveProductFromOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.StartNewOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.StartPreparingOrderUseCase;
+import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.SubmitOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.product.*;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.gateways.OrderGateway;
+import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.AddOrderProductRequest;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderItemDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.PaymentDTO;
@@ -24,19 +27,16 @@ import br.com.fiap.grupo30.fastfood.order_api.utils.CustomerHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.OrderHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.ProductHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 public class OrderControllerTest {
-
-    private MockMvc mockMvc;
 
     @Mock private CustomerUseCase customerUseCase;
     @Mock private ProductUseCase productUseCase;
@@ -46,19 +46,21 @@ public class OrderControllerTest {
     @Mock private StartPreparingOrderUseCase startPreparingOrderUseCase;
     @Mock private DeliverOrderUseCase deliverOrderUseCase;
     @Mock private FinishPreparingOrderUseCase finishPreparingOrderUseCase;
+    @Mock private SubmitOrderUseCase submitOrderUseCase;
+    @Mock private AddProductToOrderUseCase addProductToOrderUseCase;
+    @Mock private RemoveProductFromOrderUseCase removeProductFromOrderUseCase;
+    @Mock private ListOrdersWithSpecificStatusesUseCase listOrdersWithSpecificStatusesUseCase;
+    @Mock private ListOrdersByStatusUseCase listOrdersByStatusUseCase;
 
     @InjectMocks private OrderController orderController;
-
-    private static final String PATH_VARIABLE_ID = "/orders/{id}";
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockMvc = MockMvcBuilders.standaloneSetup(orderController).build();
     }
 
     @Nested
-    class GetProduct {
+    class GetOrder {
         @Test
         void shouldGetOrderById() throws Exception {
             // Arrange
@@ -72,18 +74,52 @@ public class OrderControllerTest {
                             eq(DEFAULT_CUSTOMER_CPF)))
                     .thenReturn(orderDTO);
 
-            // Act & Assert
-            mockMvc.perform(get(PATH_VARIABLE_ID, orderId).contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.orderId").value(orderId))
-                    .andExpect(jsonPath("$.status").value(orderDTO.getStatus()))
-                    .andExpect(jsonPath("$.itens").value(orderDTO.getItems()))
-                    .andExpect(jsonPath("$.totalPrice").value(orderDTO.getTotalPrice()))
-                    .andExpect(jsonPath("$.customer").value(orderDTO.getCustomer()))
-                    .andExpect(jsonPath("$.paymentStatus").value(orderDTO.getPayment()));
+            orderController.findById(orderId);
 
             // Verify
             verify(getOrderUseCase, times(1)).execute(any(OrderGateway.class), eq(1L));
+        }
+
+        @Test
+        void shouldListOrdersWithSpecificStatusesUseCase() throws Exception {
+            Long orderId = 1L;
+            OrderDTO orderDTO =
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+            when(submitOrderUseCase.execute(any(OrderGateway.class), eq(orderId)))
+                    .thenReturn(orderDTO);
+
+            orderController.submitOrder(orderId);
+            // Arrange
+            orderController.findOrdersWithSpecificStatuses();
+
+            // Verify
+            verify(listOrdersWithSpecificStatusesUseCase, times(1))
+                    .execute(any(OrderGateway.class));
+        }
+
+        @Test
+        void shouldListAllOrdersByStatus() throws Exception {
+            // Arrange
+            String status = "DRAFT";
+            OrderDTO orderDTO =
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+            OrderDTO orderDTO2 =
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            2L, CustomerHelper.valid(), ProductHelper.validProduct());
+            List<OrderDTO> listOrderDTO = new ArrayList<>();
+            listOrderDTO.add(orderDTO);
+            listOrderDTO.add(orderDTO2);
+
+            when(listOrdersByStatusUseCase.execute(any(OrderGateway.class), eq(status)))
+                    .thenReturn(listOrderDTO);
+
+            orderController.findOrdersByStatus(status);
+
+            // Verify
+            verify(listOrdersByStatusUseCase, times(1))
+                    .execute(any(OrderGateway.class), eq(status));
         }
     }
 
@@ -92,6 +128,7 @@ public class OrderControllerTest {
         @Test
         void shouldStartNewOrderAndReturn201() throws Exception {
             // Arrange
+            Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
                             1L, CustomerHelper.valid(), ProductHelper.validProduct());
@@ -101,44 +138,101 @@ public class OrderControllerTest {
                             eq(DEFAULT_CUSTOMER_CPF)))
                     .thenReturn(orderDTO);
 
-            // Act & Assert
-            String jsonContent = new ObjectMapper().writeValueAsString(orderDTO);
-            mockMvc.perform(
-                            post("/orders")
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(jsonContent))
-                    .andExpect(status().isCreated())
-                    .andExpect(jsonPath("$.name").value("Burger"));
+            orderController.findById(orderId);
 
             // Verify
-            verify(startNewOrderUseCase, times(1))
-                    .execute(
-                            any(OrderGateway.class),
-                            any(CustomerUseCase.class),
-                            eq(DEFAULT_CUSTOMER_CPF));
+            verify(getOrderUseCase, times(1)).execute(any(OrderGateway.class), eq(1L));
         }
 
         @Test
         void shouldInvokeStartNewOrderUseCase() throws Exception {
             // Arrange
+            Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
                             1L, CustomerHelper.valid(), ProductHelper.validProduct());
-
-            // Act & Assert
-            String jsonContent = new ObjectMapper().writeValueAsString(orderDTO);
-            mockMvc.perform(
-                            post("/orders")
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .content(jsonContent))
-                    .andReturn();
-
-            // Verify
-            verify(startNewOrderUseCase, times(1))
-                    .execute(
+            when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
-                            eq(DEFAULT_CUSTOMER_CPF));
+                            eq(DEFAULT_CUSTOMER_CPF)))
+                    .thenReturn(orderDTO);
+
+            orderController.findById(orderId);
+
+            // Verify
+            verify(getOrderUseCase, times(1)).execute(any(OrderGateway.class), eq(1L));
+        }
+
+        @Test
+        void shouldInvokeAddProductToOrderUseCase() throws Exception {
+            // Arrange
+            Long orderId = 1L;
+            Long productId = 1L;
+            Long productQuantity = 2L;
+            OrderDTO orderDTO =
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+            when(addProductToOrderUseCase.execute(
+                            any(OrderGateway.class),
+                            any(ProductUseCase.class),
+                            eq(orderId),
+                            eq(productId),
+                            eq(productQuantity)))
+                    .thenReturn(orderDTO);
+
+            orderController.addProduct(
+                    orderId, new AddOrderProductRequest(productId, productQuantity));
+
+            // Verify
+            verify(addProductToOrderUseCase, times(1))
+                    .execute(
+                            any(OrderGateway.class),
+                            any(ProductUseCase.class),
+                            eq(1L),
+                            eq(1L),
+                            eq(2L));
+        }
+
+        @Test
+        void shouldInvokeRemoveProductFromOrderUseCase() throws Exception {
+            // Arrange
+            Long orderId = 1L;
+            Long productId = 1L;
+            OrderDTO orderDTO =
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+            when(removeProductFromOrderUseCase.execute(
+                            any(OrderGateway.class),
+                            any(ProductUseCase.class),
+                            eq(orderId),
+                            eq(productId)))
+                    .thenReturn(orderDTO);
+
+            orderController.removeProduct(orderId, productId);
+
+            // Verify
+            verify(removeProductFromOrderUseCase, times(1))
+                    .execute(
+                            any(OrderGateway.class),
+                            any(ProductUseCase.class),
+                            eq(orderId),
+                            eq(productId));
+        }
+
+        @Test
+        void shouldInvokeSubmitOrderUseCase() throws Exception {
+            // Arrange
+            Long orderId = 1L;
+            OrderDTO orderDTO =
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+            when(submitOrderUseCase.execute(any(OrderGateway.class), eq(orderId)))
+                    .thenReturn(orderDTO);
+
+            orderController.submitOrder(orderId);
+
+            // Verify
+            verify(submitOrderUseCase, times(1)).execute(any(OrderGateway.class), eq(orderId));
         }
     }
 

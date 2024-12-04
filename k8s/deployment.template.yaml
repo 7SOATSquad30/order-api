@@ -28,6 +28,12 @@ spec:
               value: "$CUSTOMER_API_ENDPOINT"
             - name: PAYMENTS_API_ENDPOINT
               value: "$PAYMENTS_API_ENDPOINT"
+            - name: AWS_ACCESS_KEY_ID
+              value: "$AWS_ACCESS_KEY_ID"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "$AWS_SECRET_ACCESS_KEY"
+            - name: AWS_SESSION_TOKEN
+              value: "$AWS_SESSION_TOKEN"
             - name: SPRING_PROFILES_ACTIVE
               value: "$ENVIRONMENT"
           image: fiap7soat30/order-api:$VERSION

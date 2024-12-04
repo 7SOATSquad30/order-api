@@ -80,6 +80,9 @@ jobs:
         PRODUCTS_API_ENDPOINT: ${{ secrets.PRODUCTS_API_ENDPOINT }}
         CUSTOMER_API_ENDPOINT: ${{ secrets.CUSTOMER_API_ENDPOINT }}
         PAYMENTS_API_ENDPOINT: ${{ secrets.PAYMENTS_API_ENDPOINT }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
         VERSION: ${{ env.VERSION }}
         ENVIRONMENT: prod
       run: |
