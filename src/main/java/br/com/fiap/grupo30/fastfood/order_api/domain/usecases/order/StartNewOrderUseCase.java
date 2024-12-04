@@ -14,32 +14,38 @@ public class StartNewOrderUseCase {
 
     public OrderDTO execute(
             OrderGateway orderGateway, CustomerUseCase customerUseCase, String customerCpf) {
-        if (!CPF.isValid(customerCpf)) {
+        if (customerCpf != null && !CPF.isValid(customerCpf)) {
             throw new InvalidCpfException(customerCpf);
         }
 
-        Customer customer = findCustomerOrCreateAnonymous(customerUseCase, new CPF(customerCpf));
-        Order newOrder = Order.createFor(customer.getId());
-        return orderGateway.save(newOrder).toDTO();
+        if (customerCpf != null) {
+            Customer customer = findCustomer(customerUseCase, new CPF(customerCpf));
+            Order newOrder = Order.createFor(customer.getId());
+            return orderGateway.save(newOrder).toDTO();
+        } else {
+            Customer customer = CreateAnonymous(customerUseCase);
+            Order newOrder = Order.createFor(customer.getId());
+            return orderGateway.save(newOrder).toDTO();
+        }
     }
 
-    public Customer findCustomerOrCreateAnonymous(
-            CustomerUseCase customerUseCase, CPF customerCpf) {
-        if (customerCpf != null) {
-            return customerUseCase.findCustomerByCpf(customerCpf.value());
+    public Customer findCustomer(CustomerUseCase customerUseCase, CPF customerCpf) {
+        return customerUseCase.findCustomerByCpf(customerCpf.value());
+    }
+
+    public Customer CreateAnonymous(CustomerUseCase customerUseCase) {
+
+        Customer anonymousCustomer = customerUseCase.findCustomerByCpf(Customer.ANONYMOUS_CPF);
+        if (anonymousCustomer != null) {
+            return anonymousCustomer;
         } else {
-            Customer anonymousCustomer = customerUseCase.findCustomerByCpf(Customer.ANONYMOUS_CPF);
-            if (anonymousCustomer != null) {
-                return anonymousCustomer;
-            } else {
-                Customer newAnonymousCustomer =
-                        Customer.create(
-                                9999999999L,
-                                "Anonymous",
-                                Customer.ANONYMOUS_CPF,
-                                "anonymous@fastfood.com");
-                return customerUseCase.save(newAnonymousCustomer);
-            }
+            Customer newAnonymousCustomer =
+                    Customer.create(
+                            9999999999L,
+                            "Anonymous",
+                            Customer.ANONYMOUS_CPF,
+                            "anonymous@fastfood.com");
+            return customerUseCase.save(newAnonymousCustomer);
         }
     }
 }
