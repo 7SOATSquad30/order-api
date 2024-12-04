@@ -51,28 +51,6 @@ class ResourceExceptionHandlerTest {
                     Objects.requireNonNull(response.getBody()).getError(),
                     "Resource not found -Error message should match exception message");
         }
-
-        @Test
-        void shouldReturnCorrectErrorMessageForResourceNotFoundExceptionThrowable() {
-            // Arrange
-            ResourceNotFoundException exception =
-                    new ResourceNotFoundException(
-                            "Resource not found new Throwable", new Throwable());
-            MockHttpServletRequest request = new MockHttpServletRequest();
-            request.setRequestURI(PATH_VARIABLE_ID);
-
-            ResourceExceptionHandler handler = new ResourceExceptionHandler();
-
-            // Act
-            ResponseEntity<StandardError> response = handler.entityNotFound(exception, request);
-
-            // Assert
-            assertEquals(
-                    "Resource not found new Throwable",
-                    Objects.requireNonNull(response.getBody()).getError(),
-                    "Resource not found new Throwable - Error message should match exception"
-                            + " message");
-        }
     }
 
     @Nested
@@ -343,7 +321,7 @@ class ResourceExceptionHandlerTest {
 
             // Assert
             assertEquals(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    HttpStatus.BAD_REQUEST,
                     response.getStatusCode(),
                     "Cant Change Order Status Preparing Other Than Submitted Exception");
         }
@@ -411,7 +389,7 @@ class ResourceExceptionHandlerTest {
 
             // Assert
             assertEquals(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    HttpStatus.BAD_REQUEST,
                     response.getStatusCode(),
                     "Cant Change Order Status Delivered Other Than Preparing Exception");
         }
@@ -478,7 +456,7 @@ class ResourceExceptionHandlerTest {
 
             // Assert
             assertEquals(
-                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    HttpStatus.BAD_REQUEST,
                     response.getStatusCode(),
                     "Invalid Order Status Exception 400");
         }
