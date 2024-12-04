@@ -14,7 +14,7 @@ public class Payment {
     private Double amount;
 
     public static Payment create() {
-        return new Payment(PaymentStatus.NOT_SUBMITTED, 0.0);
+        return new Payment(PaymentStatus.PENDING, 0.0);
     }
 
     public static Payment create(PaymentStatus status, Double amount) {

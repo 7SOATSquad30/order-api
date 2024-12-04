@@ -8,6 +8,7 @@ import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.DatabaseException;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.InvalidCpfException;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.InvalidOrderStatusException;
+import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.OrderPaymentIsStillPendingException;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
@@ -151,6 +152,19 @@ public class ResourceExceptionHandler {
         err.setTimestamp(Instant.now());
         err.setStatus(status.value());
         err.setError("Invalid cpf exception");
+        err.setMessage(e.getMessage());
+        err.setPath(request.getRequestURI());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(OrderPaymentIsStillPendingException.class)
+    public ResponseEntity<StandardError> invalidCpf(
+            OrderPaymentIsStillPendingException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError err = new StandardError();
+        err.setTimestamp(Instant.now());
+        err.setStatus(status.value());
+        err.setError("Order payment is still pending");
         err.setMessage(e.getMessage());
         err.setPath(request.getRequestURI());
         return ResponseEntity.status(status).body(err);

@@ -14,7 +14,7 @@ public class PaymentUseCase {
     private String paymentsApiEndpoint;
 
     public Payment findPaymentStateByOrderId(Long orderId) {
-        String uri = this.paymentsApiEndpoint + "/paytments/" + orderId;
+        String uri = this.paymentsApiEndpoint + "/payments/" + orderId;
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<PaymentDTO> response = restTemplate.getForEntity(uri, PaymentDTO.class);
         PaymentDTO result = response.getBody();
