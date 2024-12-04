@@ -14,35 +14,6 @@ public class OrderHelper {
     private static final Long DEFAULT_PRODUCTID = 1L;
     private static final Double DEFAULT_PRODUCT_PRICE = 10.50;
 
-    public static OrderDTO createOrderDTO(
-            Long id,
-            OrderStatus status,
-            Long customerId,
-            Collection<OrderItem> items,
-            Double totalPrice) {
-        return createOrderWithId(id, status, customerId, items, totalPrice).toDTO();
-    }
-
-    public static Order createOrderWithId(
-            Long id,
-            OrderStatus status,
-            Long customerId,
-            Collection<OrderItem> items,
-            Double totalPrice) {
-        return createOrderNew(id, status, customerId, items, totalPrice);
-    }
-
-    public static Order createOrderNew(
-            Long id,
-            OrderStatus status,
-            Long customerId,
-            Collection<OrderItem> items,
-            Double totalPrice) {
-        Order product = new Order(null, status, customerId, items, totalPrice);
-        product.setId(id);
-        return product;
-    }
-
     public static OrderDTO createDefaultOrderDTOWithId(Long id, Long customerId, Long productId) {
         return createDefaultOrderWithId(id, customerId, productId).toDTO();
     }
