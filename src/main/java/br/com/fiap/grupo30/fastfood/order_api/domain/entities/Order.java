@@ -1,11 +1,8 @@
 package br.com.fiap.grupo30.fastfood.order_api.domain.entities;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.OrderStatus;
-import br.com.fiap.grupo30.fastfood.order_api.domain.PaymentStatus;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.persistence.entities.OrderEntity;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
-import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderItemDTO;
-import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.CompositeDomainValidationException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Objects;
@@ -68,24 +65,9 @@ public class Order {
         return payment;
     }
 
-    public void setPaymentProcessing() {
-        this.payment.setStatus(PaymentStatus.PROCESSING);
-        this.payment.setAmount(this.getTotalPrice());
-    }
-
-    public void setPaymentCollected(Double paymentCollectedAmount) {
-        this.payment.setStatus(PaymentStatus.COLLECTED);
-        this.payment.setAmount(paymentCollectedAmount);
-    }
-
-    public void setPaymentRejected() {
-        this.payment.setStatus(PaymentStatus.REJECTED);
-        this.payment.setAmount(this.getTotalPrice());
-    }
-
-    public Collection<OrderItem> getItems() {
-        return items;
-    }
+    // public Collection<OrderItem> getItems() {
+    // return items;
+    // }
 
     public void addProduct(Product product, Long quantity) {
         this.items.stream()
@@ -112,27 +94,6 @@ public class Order {
         this.totalPrice = this.items.stream().mapToDouble(OrderItem::getTotalPrice).sum();
     }
 
-    public void validate() {
-        var errors = new LinkedList<String>();
-
-        if (this.status == OrderStatus.SUBMITTED && !this.hasProducts()) {
-            errors.add("Cannot submit order without products");
-        }
-
-        if (this.status == OrderStatus.PREPARING
-                && !PaymentStatus.COLLECTED.equals(this.getPayment().getStatus())) {
-            errors.add("Can not start peparing order without collecting payment");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new CompositeDomainValidationException(errors);
-        }
-    }
-
-    private boolean hasProducts() {
-        return !this.items.isEmpty();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -149,7 +110,7 @@ public class Order {
         return new OrderDTO(
                 id,
                 status,
-                items.stream().map(item -> item.toDTO()).toArray(OrderItemDTO[]::new),
+                items.stream().map(item -> item.toDTO()).toList(),
                 totalPrice,
                 customer.toDTO(),
                 payment.toDTO());

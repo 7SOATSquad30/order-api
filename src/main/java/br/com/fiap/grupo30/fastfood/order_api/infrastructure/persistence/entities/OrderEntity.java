@@ -71,21 +71,6 @@ public class OrderEntity {
         }
     }
 
-    @PrePersist
-    protected void prePersist() {
-        createdAt = Instant.now();
-    }
-
-    @PreUpdate
-    protected void preUpdate() {
-        updatedAt = Instant.now();
-    }
-
-    @PreRemove
-    protected void preRemove() {
-        deletedAt = Instant.now();
-    }
-
     public Order toDomainEntity() {
         return new Order(
                 id,

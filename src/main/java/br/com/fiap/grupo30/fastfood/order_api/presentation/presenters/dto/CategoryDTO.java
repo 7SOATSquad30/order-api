@@ -7,9 +7,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CategoryDTO {
-
-    private Long categoryId;
-
     @NotBlank(message = "Campo requirido")
     private String name;
 }

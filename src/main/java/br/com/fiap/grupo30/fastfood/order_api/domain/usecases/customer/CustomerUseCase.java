@@ -1,25 +1,19 @@
 package br.com.fiap.grupo30.fastfood.order_api.domain.usecases.customer;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Customer;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class CustomerUseCase {
 
+    private static final String PATH_VARIABLE_ID = "http://localhost:8080/customer_api/";
+
     public Customer findCustomerByCpf(String cpf) {
-        String uri = "http://localhost:8080/customer_api/" + cpf;
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Customer> response = restTemplate.getForEntity(uri, Customer.class);
-        return response.getBody();
+        return new RestTemplate().getForObject(PATH_VARIABLE_ID + cpf, Customer.class);
     }
 
     public Customer save(Customer customer) {
-        String uri = "http://localhost:8080/customer_api/";
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Customer> response =
-                restTemplate.postForEntity(uri, customer, Customer.class);
-        return response.getBody();
+        return new RestTemplate().postForObject(PATH_VARIABLE_ID, customer, Customer.class);
     }
 }
