@@ -53,24 +53,20 @@ public class Order {
         this.customerId = customer.getId();
     }
 
-    // public Collection<OrderItem> getItems() {
-    // return items;
-    // }
-
-    public void addProduct(Product product, Long quantity) {
+    public void addProduct(Long productId, Long quantity, Double unitPrice) {
         this.items.stream()
-                .filter(orderItem -> orderItem.getProduct().equals(product))
+                .filter(orderItem -> orderItem.getProductId().equals(productId))
                 .findFirst()
                 .ifPresentOrElse(
                         existingItem ->
                                 existingItem.setQuantity(existingItem.getQuantity() + quantity),
-                        () -> this.items.add(new OrderItem(product, quantity)));
+                        () -> this.items.add(new OrderItem(productId, quantity, unitPrice)));
 
         this.recalculateTotalPrice();
     }
 
-    public void removeProduct(Product product) {
-        this.items.removeIf(orderItem -> orderItem.getProduct().equals(product));
+    public void removeProduct(Long productId) {
+        this.items.removeIf(orderItem -> orderItem.getProductId().equals(productId));
         this.recalculateTotalPrice();
     }
 

@@ -1,5 +1,6 @@
 create table tb_order_item (
     total_price float(53) not null check (total_price>=0),
+    unit_price float(53) not null check (unit_price>=0),
     id bigint not null,
     order_id bigint not null,
     product_id bigint not null,
