@@ -166,6 +166,23 @@ public class OrderControllerTest {
         }
 
         @Test
+        void shouldInvokeStartNewOrderUseCaseWithoutCustomer() throws Exception {
+            // Arrange
+            Long orderId = 1L;
+            OrderDTO orderDTO =
+                    OrderHelper.createDefaultOrderDTOWithId(
+                            1L, CustomerHelper.valid().getId(), ProductHelper.valid());
+            when(startNewOrderUseCase.execute(
+                            any(OrderGateway.class), any(CustomerUseCase.class), eq(null)))
+                    .thenReturn(orderDTO);
+
+            orderController.findById(orderId);
+
+            // Verify
+            verify(getOrderUseCase, times(1)).execute(any(OrderGateway.class), eq(1L));
+        }
+
+        @Test
         void shouldInvokeAddProductToOrderUseCase() throws Exception {
             // Arrange
             Long orderId = 1L;

@@ -59,6 +59,23 @@ class DeliverOrderUseCaseTest {
     }
 
     @Test
+    void shouldReturnOrderDTOWithoutCustomer() {
+        // Arrange
+        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
+
+        when(orderGateway.save(any(Order.class))).thenReturn(order);
+        when(customerUseCase.findCustomerByCpf(any(String.class)))
+                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
+
+        // Act
+        OrderDTO result =
+                startNewOrderUseCase.execute(orderGateway, customerUseCase, DEFAULT_CUSTOMER_CPF);
+
+        // Assert
+        assertThat(result.getOrderId()).isEqualTo(order.getId());
+    }
+
+    @Test
     void shouldReturnOrderDTOWithCorrectStatus() {
         // Arrange
         Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);

@@ -71,6 +71,38 @@ class StartNewOrderUseCaseTest {
     }
 
     @Test
+    void shouldReturnOrderDTOWithoutCPF() throws Exception {
+        // Arrange
+        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
+
+        when(orderGateway.save(any(Order.class))).thenReturn(order);
+        when(customerUseCase.findCustomerByCpf(any(String.class)))
+                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
+
+        // Act
+        OrderDTO result = startNewOrderUseCase.execute(orderGateway, customerUseCase, null);
+
+        // Assert
+        assertThat(result.getCustomerId()).isEqualTo(order.getCustomerId());
+    }
+
+    @Test
+    void shouldReturnOrderDTOAnonymousCPF() throws Exception {
+        // Arrange
+        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
+
+        when(orderGateway.save(any(Order.class))).thenReturn(order);
+        when(customerUseCase.findCustomerByCpf(any(String.class)))
+                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
+
+        // Act
+        OrderDTO result = startNewOrderUseCase.execute(orderGateway, customerUseCase, null);
+
+        // Assert
+        assertThat(result.getCustomerId()).isEqualTo(order.getCustomerId());
+    }
+
+    @Test
     void shouldReturnOrderDTOWithCorrectTotalPrice() throws Exception {
         // Arrange
         Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
