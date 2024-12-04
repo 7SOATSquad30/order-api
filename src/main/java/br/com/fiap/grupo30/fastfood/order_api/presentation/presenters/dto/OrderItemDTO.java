@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class OrderItemDTO {
-    private ProductDTO product;
+    private Long productId;
     private Long quantity;
     private Double totalPrice;
 }

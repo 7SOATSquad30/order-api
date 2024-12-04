@@ -23,9 +23,9 @@ public class OrderItemEntity {
     @JoinColumn(name = "order_id", nullable = false, updatable = false)
     private OrderEntity order;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id", nullable = false, updatable = false)
-    private ProductEntity product;
+    @Column(nullable = false)
+    @Min(1L)
+    private Long productId;
 
     @Column(nullable = false)
     @Min(1L)
@@ -33,11 +33,16 @@ public class OrderItemEntity {
 
     @Column(nullable = false)
     @Min(0)
+    private Double unitPrice;
+
+    @Column(nullable = false)
+    @Min(0)
     private Double totalPrice;
 
-    public OrderItemEntity(ProductEntity product, Long quantity, Double totalPrice) {
-        this.product = product;
+    public OrderItemEntity(Long productId, Long quantity, Double totalPrice, Double unitPrice) {
+        this.productId = productId;
         this.quantity = quantity;
+        this.unitPrice = unitPrice;
         this.totalPrice = totalPrice;
     }
 
@@ -46,6 +51,6 @@ public class OrderItemEntity {
     }
 
     public OrderItem toDomainEntity() {
-        return new OrderItem(product.toDomainEntity(), quantity);
+        return new OrderItem(productId, quantity, unitPrice);
     }
 }

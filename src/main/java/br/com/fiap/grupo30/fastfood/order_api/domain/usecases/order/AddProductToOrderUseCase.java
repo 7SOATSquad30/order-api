@@ -2,10 +2,10 @@ package br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.OrderStatus;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Order;
-import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Product;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.product.ProductUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.gateways.OrderGateway;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
+import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.ProductDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.CantChangeOrderProductsAfterSubmitException;
 import org.springframework.stereotype.Component;
 
@@ -24,9 +24,9 @@ public class AddProductToOrderUseCase {
             throw new CantChangeOrderProductsAfterSubmitException();
         }
 
-        Product product = productUseCase.findProductById(productId);
+        ProductDTO product = productUseCase.findProductById(productId);
 
-        order.addProduct(product, productQuantity);
+        order.addProduct(product.getProductId(), productQuantity, product.getPrice());
 
         return orderGateway.save(order).toDTO();
     }

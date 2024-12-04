@@ -8,20 +8,22 @@ import lombok.Setter;
 
 @Getter
 public class OrderItem {
-    private Product product;
+    private Long productId;
     private Long quantity;
+    private Double unitPrice;
 
     @Setter(AccessLevel.NONE)
     private Double totalPrice;
 
-    public OrderItem(Product product, Long quantity) {
-        this.product = product;
+    public OrderItem(Long productId, Long quantity, Double unitPrice) {
+        this.productId = productId;
         this.quantity = quantity;
+        this.unitPrice = unitPrice;
         recalculateTotalPrice();
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setProduct(Long productId) {
+        this.productId = productId;
         recalculateTotalPrice();
     }
 
@@ -31,14 +33,14 @@ public class OrderItem {
     }
 
     private void recalculateTotalPrice() {
-        this.totalPrice = this.product.getPrice() * this.quantity;
+        this.totalPrice = this.getUnitPrice() * this.quantity;
     }
 
     public OrderItemDTO toDTO() {
-        return new OrderItemDTO(product.toDTO(), quantity, totalPrice);
+        return new OrderItemDTO(productId, quantity, totalPrice);
     }
 
     public OrderItemEntity toPersistence() {
-        return new OrderItemEntity(product.toPersistence(), quantity, totalPrice);
+        return new OrderItemEntity(productId, quantity, totalPrice, unitPrice);
     }
 }
