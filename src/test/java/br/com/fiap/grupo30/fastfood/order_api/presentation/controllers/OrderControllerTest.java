@@ -26,7 +26,6 @@ import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.Paymen
 import br.com.fiap.grupo30.fastfood.order_api.utils.CustomerHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.OrderHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.ProductHelper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
