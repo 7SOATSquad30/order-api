@@ -17,5 +17,4 @@ public class OrderDTO {
     private Collection<OrderItemDTO> items;
     private Double totalPrice;
     private Long customerId;
-    private PaymentDTO payment;
 }

@@ -102,20 +102,4 @@ class GetOrderUseCaseTest {
         // Assert
         assertThat(result.getCustomerId()).isEqualTo(entity.getCustomerId());
     }
-
-    @Test
-    void shouldReturnOrderDTOWithCorrectPayment() throws Exception {
-
-        OrderEntity entity = OrderHelper.createDefaultOrder().toPersistence();
-        when(jpaOrderRepository.findById(DEFAULT_ORDERID)).thenReturn(Optional.of(entity));
-
-        // Act
-        Order result = orderGateway.findById(DEFAULT_ORDERID);
-
-        orderController.addProduct(
-                DEFAULT_ORDERID, new AddOrderProductRequest(DEFAULT_PRODUCTID, 100L));
-
-        // Assert
-        assertThat(result.getPayment().getStatus()).isEqualTo(entity.getPayment().getStatus());
-    }
 }

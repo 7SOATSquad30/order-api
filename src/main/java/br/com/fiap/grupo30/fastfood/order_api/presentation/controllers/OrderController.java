@@ -2,6 +2,7 @@ package br.com.fiap.grupo30.fastfood.order_api.presentation.controllers;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.customer.CustomerUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.*;
+import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.payment.PaymentUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.product.ProductUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.auth.AdminRequired;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.gateways.OrderGateway;
@@ -36,6 +37,7 @@ public class OrderController {
     private final JpaOrderRepository jpaOrderRepository;
     private final ProductUseCase productUseCase;
     private final CustomerUseCase customerUseCase;
+    private final PaymentUseCase paymentUseCase;
 
     @Autowired
     public OrderController(
@@ -51,7 +53,8 @@ public class OrderController {
             DeliverOrderUseCase deliverOrderUseCase,
             JpaOrderRepository jpaOrderRepository,
             ProductUseCase productUseCase,
-            CustomerUseCase customerUseCase) {
+            CustomerUseCase customerUseCase,
+            PaymentUseCase paymentUseCase) {
         this.startNewOrderUseCase = startNewOrderUseCase;
         this.addProductToOrderUseCase = addProductToOrderUseCase;
         this.removeProductFromOrderUseCase = removeProductFromOrderUseCase;
@@ -65,6 +68,7 @@ public class OrderController {
         this.jpaOrderRepository = jpaOrderRepository;
         this.productUseCase = productUseCase;
         this.customerUseCase = customerUseCase;
+        this.paymentUseCase = paymentUseCase;
     }
 
     @GetMapping()
@@ -164,7 +168,7 @@ public class OrderController {
             description = "Start preparing an order and return the order's data")
     public ResponseEntity<OrderDTO> startPreparingOrder(@PathVariable Long orderId) {
         OrderGateway orderGateway = new OrderGateway(jpaOrderRepository);
-        OrderDTO order = startPreparingOrderUseCase.execute(orderGateway, orderId);
+        OrderDTO order = startPreparingOrderUseCase.execute(orderGateway, paymentUseCase, orderId);
         return ResponseEntity.ok().body(order);
     }
 
