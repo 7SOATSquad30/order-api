@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
 @Entity
-@Table(name = "tb_payment")
 public class PaymentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,21 +47,6 @@ public class PaymentEntity {
 
     public void setParentRelation(OrderEntity order) {
         this.order = order;
-    }
-
-    @PrePersist
-    protected void prePersist() {
-        createdAt = Instant.now();
-    }
-
-    @PreUpdate
-    protected void preUpdate() {
-        updatedAt = Instant.now();
-    }
-
-    @PreRemove
-    protected void preRemove() {
-        deletedAt = Instant.now();
     }
 
     public Payment toDomainEntity() {

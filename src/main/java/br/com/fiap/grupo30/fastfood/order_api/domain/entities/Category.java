@@ -15,10 +15,6 @@ public class Category {
     private Long id;
     private String name;
 
-    public static Category create(String name) {
-        return new Category(null, name);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -32,7 +28,7 @@ public class Category {
     }
 
     public CategoryDTO toDTO() {
-        return new CategoryDTO(id, name);
+        return new CategoryDTO(name);
     }
 
     public CategoryEntity toPersistence() {

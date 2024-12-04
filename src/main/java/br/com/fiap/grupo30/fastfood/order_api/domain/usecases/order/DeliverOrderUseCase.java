@@ -13,11 +13,9 @@ public class DeliverOrderUseCase {
     public OrderDTO execute(OrderGateway orderGateway, Long orderId) {
         Order order = orderGateway.findById(orderId);
 
-        if (order.getStatus() != OrderStatus.READY) {
-            throw new CantChangeOrderStatusDeliveredOtherThanReadyException();
-        }
+        if (order.getStatus() == OrderStatus.READY) order.setStatus(OrderStatus.DELIVERED);
+        else throw new CantChangeOrderStatusDeliveredOtherThanReadyException();
 
-        order.setStatus(OrderStatus.DELIVERED);
         return orderGateway.save(order).toDTO();
     }
 }

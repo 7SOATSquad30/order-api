@@ -23,6 +23,7 @@ import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.AddOrd
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderItemDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.PaymentDTO;
+import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.CantChangeOrderProductsAfterSubmitException;
 import br.com.fiap.grupo30.fastfood.order_api.utils.CustomerHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.OrderHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.ProductHelper;
@@ -66,7 +67,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                            1L, CustomerHelper.valid(), ProductHelper.valid());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
@@ -84,7 +85,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                            1L, CustomerHelper.valid(), ProductHelper.valid());
             when(submitOrderUseCase.execute(any(OrderGateway.class), eq(orderId)))
                     .thenReturn(orderDTO);
 
@@ -103,10 +104,10 @@ public class OrderControllerTest {
             String status = "DRAFT";
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                            1L, CustomerHelper.valid(), ProductHelper.valid());
             OrderDTO orderDTO2 =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            2L, CustomerHelper.valid(), ProductHelper.validProduct());
+                            2L, CustomerHelper.valid(), ProductHelper.valid());
             List<OrderDTO> listOrderDTO = new ArrayList<>();
             listOrderDTO.add(orderDTO);
             listOrderDTO.add(orderDTO2);
@@ -130,7 +131,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                            1L, CustomerHelper.valid(), ProductHelper.valid());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
@@ -149,7 +150,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                            1L, CustomerHelper.valid(), ProductHelper.valid());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
@@ -170,7 +171,7 @@ public class OrderControllerTest {
             Long productQuantity = 2L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                            1L, CustomerHelper.valid(), ProductHelper.valid());
             when(addProductToOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(ProductUseCase.class),
@@ -178,6 +179,10 @@ public class OrderControllerTest {
                             eq(productId),
                             eq(productQuantity)))
                     .thenReturn(orderDTO);
+
+            if (orderDTO.getStatus() != OrderStatus.DRAFT) {
+                throw new CantChangeOrderProductsAfterSubmitException();
+            }
 
             orderController.addProduct(
                     orderId, new AddOrderProductRequest(productId, productQuantity));
@@ -199,7 +204,7 @@ public class OrderControllerTest {
             Long productId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                            1L, CustomerHelper.valid(), ProductHelper.valid());
             when(removeProductFromOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(ProductUseCase.class),
@@ -224,7 +229,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.validProduct());
+                            1L, CustomerHelper.valid(), ProductHelper.valid());
             when(submitOrderUseCase.execute(any(OrderGateway.class), eq(orderId)))
                     .thenReturn(orderDTO);
 
@@ -241,9 +246,8 @@ public class OrderControllerTest {
         void shouldStartPreperingOrderAndReturn200() throws Exception {
             // Arrange
             Long orderId = 1L;
-            OrderItemDTO[] orderItem = {
-                OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()
-            };
+            List<OrderItemDTO> orderItem =
+                    List.of(OrderHelper.createOrderItem(ProductHelper.valid()).toDTO());
             OrderStatus orderStatus = OrderStatus.PREPARING;
             OrderDTO updatedOrderDTO =
                     OrderHelper.createUpdatedOrderDTO(
@@ -267,9 +271,8 @@ public class OrderControllerTest {
         void shouldDeliverOrderAndReturn200() throws Exception {
             // Arrange
             Long orderId = 1L;
-            OrderItemDTO[] orderItem = {
-                OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()
-            };
+            List<OrderItemDTO> orderItem =
+                    List.of(OrderHelper.createOrderItem(ProductHelper.valid()).toDTO());
             OrderStatus orderStatus = OrderStatus.DELIVERED;
             OrderDTO updatedOrderDTO =
                     OrderHelper.createUpdatedOrderDTO(
@@ -293,9 +296,8 @@ public class OrderControllerTest {
         void shouldFinishPreparingOrderAndReturn200() throws Exception {
             // Arrange
             Long orderId = 1L;
-            OrderItemDTO[] orderItem = {
-                OrderHelper.createOrderItem(ProductHelper.validProduct()).toDTO()
-            };
+            List<OrderItemDTO> orderItem =
+                    List.of(OrderHelper.createOrderItem(ProductHelper.valid()).toDTO());
             OrderStatus orderStatus = OrderStatus.READY;
             OrderDTO updatedOrderDTO =
                     OrderHelper.createUpdatedOrderDTO(

@@ -12,6 +12,8 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class Customer {
+    public static final String ANONYMOUS_CPF = "970.410.008-69";
+
     private Long id;
     private String name;
     private CPF cpf;
@@ -22,15 +24,15 @@ public class Customer {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Customer customer)) return false;
-        return Objects.equals(cpf.value(), customer.cpf.value());
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(cpf.value());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Customer customer)) return false;
+        return Objects.equals(id, customer.id);
     }
 
     public CustomerDTO toDTO() {

@@ -4,7 +4,6 @@ import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Customer;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Order;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.customer.CustomerUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.valueobjects.CPF;
-import br.com.fiap.grupo30.fastfood.order_api.infrastructure.configuration.Constants;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.gateways.OrderGateway;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.InvalidCpfException;
@@ -24,18 +23,18 @@ public class StartNewOrderUseCase {
         return orderGateway.save(newOrder).toDTO();
     }
 
-    private Customer findCustomerOrCreateAnonymous(
+    public Customer findCustomerOrCreateAnonymous(
             CustomerUseCase customerUseCase, CPF customerCpf) {
         if (customerCpf != null) {
             return customerUseCase.findCustomerByCpf(customerCpf.value());
         } else {
-            Customer anonymousCustomer = customerUseCase.findCustomerByCpf(Constants.ANONYMOUS_CPF);
+            Customer anonymousCustomer = customerUseCase.findCustomerByCpf(Customer.ANONYMOUS_CPF);
             if (anonymousCustomer != null) {
                 return anonymousCustomer;
             } else {
                 Customer newAnonymousCustomer =
                         Customer.create(
-                                "Anonymous", Constants.ANONYMOUS_CPF, "anonymous@fastfood.com");
+                                "Anonymous", Customer.ANONYMOUS_CPF, "anonymous@fastfood.com");
                 return customerUseCase.save(newAnonymousCustomer);
             }
         }

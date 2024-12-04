@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @EqualsAndHashCode
 @Entity
-@Table(name = "tb_category")
 public class CategoryEntity {
 
     @Id
@@ -51,11 +50,11 @@ public class CategoryEntity {
         deletedAt = Instant.now();
     }
 
-    public Category toDomainEntity() {
-        return new Category(id, name);
-    }
-
     public CategoryEntity toPersistence() {
         return new CategoryEntity(id, name);
+    }
+
+    public Category toDomainEntity() {
+        return new Category(id, name);
     }
 }

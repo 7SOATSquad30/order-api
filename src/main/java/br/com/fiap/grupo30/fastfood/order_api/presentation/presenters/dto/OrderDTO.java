@@ -1,6 +1,7 @@
 package br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.OrderStatus;
+import java.util.Collection;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +14,7 @@ public class OrderDTO {
     private Long orderId;
 
     private OrderStatus status;
-    private OrderItemDTO[] items;
+    private Collection<OrderItemDTO> items;
     private Double totalPrice;
     private CustomerDTO customer;
     private PaymentDTO payment;
