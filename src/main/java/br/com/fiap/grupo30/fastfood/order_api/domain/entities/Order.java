@@ -18,25 +18,17 @@ public class Order {
     private Long id;
     private OrderStatus status;
     private Long customerId;
-    private Payment payment;
     private Collection<OrderItem> items;
     private Double totalPrice = 0.0;
 
     public static Order createFor(Long customerId) {
-        return new Order(
-                null, OrderStatus.DRAFT, customerId, Payment.create(), new LinkedList<OrderItem>());
+        return new Order(null, OrderStatus.DRAFT, customerId, new LinkedList<OrderItem>());
     }
 
-    public Order(
-            Long id,
-            OrderStatus status,
-            Long customerId,
-            Payment payment,
-            Collection<OrderItem> items) {
+    public Order(Long id, OrderStatus status, Long customerId, Collection<OrderItem> items) {
         this.id = id;
         this.status = status;
         this.customerId = customerId;
-        this.payment = payment;
         this.items = items;
         recalculateTotalPrice();
     }
@@ -59,10 +51,6 @@ public class Order {
 
     public void setCustomer(Customer customer) {
         this.customerId = customer.getId();
-    }
-
-    public Payment getPayment() {
-        return payment;
     }
 
     // public Collection<OrderItem> getItems() {
@@ -112,16 +100,11 @@ public class Order {
                 status,
                 items.stream().map(item -> item.toDTO()).toList(),
                 totalPrice,
-                customerId,
-                payment.toDTO());
+                customerId);
     }
 
     public OrderEntity toPersistence() {
         return new OrderEntity(
-                id,
-                status,
-                customerId,
-                payment.toPersistence(),
-                items.stream().map(OrderItem::toPersistence).toList());
+                id, status, customerId, items.stream().map(OrderItem::toPersistence).toList());
     }
 }

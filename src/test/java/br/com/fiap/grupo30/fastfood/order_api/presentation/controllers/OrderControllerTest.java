@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.OrderStatus;
 import br.com.fiap.grupo30.fastfood.order_api.domain.PaymentStatus;
+import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Payment;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.customer.CustomerUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.AddProductToOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.DeliverOrderUseCase;
@@ -17,12 +18,12 @@ import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.RemoveProduc
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.StartNewOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.StartPreparingOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.SubmitOrderUseCase;
+import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.payment.PaymentUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.product.*;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.gateways.OrderGateway;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.AddOrderProductRequest;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderItemDTO;
-import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.PaymentDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.exceptions.CantChangeOrderProductsAfterSubmitException;
 import br.com.fiap.grupo30.fastfood.order_api.utils.CustomerHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.OrderHelper;
@@ -40,6 +41,7 @@ public class OrderControllerTest {
 
     @Mock private CustomerUseCase customerUseCase;
     @Mock private ProductUseCase productUseCase;
+    @Mock private PaymentUseCase paymentUseCase;
     private static final String DEFAULT_CUSTOMER_CPF = "29375235017";
     @Mock private GetOrderUseCase getOrderUseCase;
     @Mock private StartNewOrderUseCase startNewOrderUseCase;
@@ -255,16 +257,21 @@ public class OrderControllerTest {
                             orderStatus,
                             orderItem,
                             100.00,
-                            CustomerHelper.valid().toDTO().getId(),
-                            new PaymentDTO(PaymentStatus.COLLECTED, 100.00));
+                            CustomerHelper.valid().toDTO().getId());
 
-            when(startPreparingOrderUseCase.execute(any(OrderGateway.class), eq(1L)))
+            when(startPreparingOrderUseCase.execute(
+                            any(OrderGateway.class), any(PaymentUseCase.class), eq(1L)))
                     .thenReturn(updatedOrderDTO);
+            when(paymentUseCase.findPaymentStateByOrderId(orderId))
+                    .thenReturn(
+                            Payment.create(
+                                    PaymentStatus.COLLECTED, updatedOrderDTO.getTotalPrice()));
 
             orderController.startPreparingOrder(orderId);
 
             // Verify
-            verify(startPreparingOrderUseCase, times(1)).execute(any(OrderGateway.class), eq(1L));
+            verify(startPreparingOrderUseCase, times(1))
+                    .execute(any(OrderGateway.class), any(PaymentUseCase.class), eq(1L));
         }
 
         @Test
@@ -280,8 +287,7 @@ public class OrderControllerTest {
                             orderStatus,
                             orderItem,
                             100.00,
-                            CustomerHelper.valid().toDTO().getId(),
-                            new PaymentDTO(PaymentStatus.COLLECTED, 100.00));
+                            CustomerHelper.valid().toDTO().getId());
 
             when(deliverOrderUseCase.execute(any(OrderGateway.class), eq(1L)))
                     .thenReturn(updatedOrderDTO);
@@ -305,8 +311,7 @@ public class OrderControllerTest {
                             orderStatus,
                             orderItem,
                             100.00,
-                            CustomerHelper.valid().toDTO().getId(),
-                            new PaymentDTO(PaymentStatus.COLLECTED, 100.00));
+                            CustomerHelper.valid().toDTO().getId());
 
             when(finishPreparingOrderUseCase.execute(any(OrderGateway.class), eq(1L)))
                     .thenReturn(updatedOrderDTO);

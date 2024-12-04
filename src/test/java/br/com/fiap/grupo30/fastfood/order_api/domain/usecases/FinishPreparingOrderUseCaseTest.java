@@ -91,21 +91,4 @@ class FinishPreparingOrderUseCaseTest {
         // Assert
         assertThat(result.getCustomerId()).isEqualTo(order.getCustomerId());
     }
-
-    @Test
-    void shouldReturnOrderDTOWithCorrectPayment() {
-        // Arrange
-        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
-
-        when(orderGateway.save(any(Order.class))).thenReturn(order);
-        when(customerUseCase.findCustomerByCpf(any(String.class)))
-                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
-
-        // Act
-        OrderDTO result =
-                startNewOrderUseCase.execute(orderGateway, customerUseCase, DEFAULT_CUSTOMER_CPF);
-
-        // Assert
-        assertThat(result.getPayment().getStatus()).isEqualTo(order.getPayment().getStatus());
-    }
 }

@@ -3,11 +3,9 @@ package br.com.fiap.grupo30.fastfood.order_api.utils;
 import br.com.fiap.grupo30.fastfood.order_api.domain.OrderStatus;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Order;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.OrderItem;
-import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Payment;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Product;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderItemDTO;
-import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.PaymentDTO;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -19,30 +17,27 @@ public class OrderHelper {
             Long id,
             OrderStatus status,
             Long customerId,
-            Payment payment,
             Collection<OrderItem> items,
             Double totalPrice) {
-        return createOrderWithId(id, status, customerId, payment, items, totalPrice).toDTO();
+        return createOrderWithId(id, status, customerId, items, totalPrice).toDTO();
     }
 
     public static Order createOrderWithId(
             Long id,
             OrderStatus status,
             Long customerId,
-            Payment payment,
             Collection<OrderItem> items,
             Double totalPrice) {
-        return createOrderNew(id, status, customerId, payment, items, totalPrice);
+        return createOrderNew(id, status, customerId, items, totalPrice);
     }
 
     public static Order createOrderNew(
             Long id,
             OrderStatus status,
             Long customerId,
-            Payment payment,
             Collection<OrderItem> items,
             Double totalPrice) {
-        Order product = new Order(null, status, customerId, payment, items, totalPrice);
+        Order product = new Order(null, status, customerId, items, totalPrice);
         product.setId(id);
         return product;
     }
@@ -81,7 +76,7 @@ public class OrderHelper {
     public static Order createOrderStatus(Long id, OrderStatus status) {
         Collection<OrderItem> orderItem = new LinkedList<OrderItem>();
         orderItem.add(OrderHelper.createOrderItem(ProductHelper.valid()));
-        return new Order(id, status, CustomerHelper.valid().getId(), Payment.create(), orderItem);
+        return new Order(id, status, CustomerHelper.valid().getId(), orderItem);
     }
 
     public static OrderItem createOrderItem(Product product) {
@@ -94,8 +89,7 @@ public class OrderHelper {
             OrderStatus status,
             Collection<OrderItemDTO> items,
             Double totalPrice,
-            Long customerId,
-            PaymentDTO payment) {
-        return new OrderDTO(id, status, items, totalPrice, customerId, payment);
+            Long customerId) {
+        return new OrderDTO(id, status, items, totalPrice, customerId);
     }
 }

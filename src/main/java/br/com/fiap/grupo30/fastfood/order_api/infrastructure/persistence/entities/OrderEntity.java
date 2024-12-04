@@ -12,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -40,13 +39,6 @@ public class OrderEntity {
     @Column(nullable = false)
     private Long customerId;
 
-    @OneToOne(
-            mappedBy = "order",
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    private PaymentEntity payment;
-
     @OneToMany(
             mappedBy = "order",
             fetch = FetchType.EAGER,
@@ -67,15 +59,12 @@ public class OrderEntity {
             Long orderId,
             OrderStatus status,
             Long customerId,
-            PaymentEntity payment,
             Collection<OrderItemEntity> orderItems) {
         this.id = orderId;
         this.status = status;
         this.customerId = customerId;
-        this.payment = payment;
         this.items = orderItems;
 
-        this.payment.setParentRelation(this);
         for (OrderItemEntity orderItem : this.items) {
             orderItem.setParentRelation(this);
         }
@@ -86,7 +75,6 @@ public class OrderEntity {
                 id,
                 status,
                 customerId,
-                payment.toDomainEntity(),
                 items.stream()
                         .map(OrderItemEntity::toDomainEntity)
                         .collect(Collectors.toCollection(ArrayList::new)));
