@@ -9,6 +9,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CustomerDTO {
     @NotBlank(message = "Campo obrigatório")
+    private Long id;
+
+    @NotBlank(message = "Campo obrigatório")
     private String name;
 
     @NotBlank(message = "Campo obrigatório")

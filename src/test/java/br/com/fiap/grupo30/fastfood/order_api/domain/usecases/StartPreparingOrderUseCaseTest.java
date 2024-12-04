@@ -13,6 +13,7 @@ import br.com.fiap.grupo30.fastfood.order_api.infrastructure.gateways.OrderGatew
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.persistence.repositories.JpaOrderRepository;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.controllers.OrderController;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
+import br.com.fiap.grupo30.fastfood.order_api.utils.CustomerHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.OrderHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,6 +50,8 @@ class StartPreparingOrderUseCaseTest {
         Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
 
         when(orderGateway.save(any(Order.class))).thenReturn(order);
+        when(customerUseCase.findCustomerByCpf(any(String.class)))
+                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
 
         // Act
         OrderDTO result =
@@ -64,13 +67,15 @@ class StartPreparingOrderUseCaseTest {
         Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
 
         when(orderGateway.save(any(Order.class))).thenReturn(order);
+        when(customerUseCase.findCustomerByCpf(any(String.class)))
+                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
 
         // Act
         OrderDTO result =
                 startNewOrderUseCase.execute(orderGateway, customerUseCase, DEFAULT_CUSTOMER_CPF);
 
         // Assert
-        assertThat(result.getCustomer().getName()).isEqualTo(order.getCustomer().getName());
+        assertThat(result.getCustomerId()).isEqualTo(order.getCustomerId());
     }
 
     @Test
@@ -79,6 +84,8 @@ class StartPreparingOrderUseCaseTest {
         Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
 
         when(orderGateway.save(any(Order.class))).thenReturn(order);
+        when(customerUseCase.findCustomerByCpf(any(String.class)))
+                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
 
         // Act
         OrderDTO result =

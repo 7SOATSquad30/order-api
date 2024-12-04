@@ -67,7 +67,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.valid());
+                            1L, CustomerHelper.valid().getId(), ProductHelper.valid());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
@@ -85,7 +85,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.valid());
+                            1L, CustomerHelper.valid().getId(), ProductHelper.valid());
             when(submitOrderUseCase.execute(any(OrderGateway.class), eq(orderId)))
                     .thenReturn(orderDTO);
 
@@ -104,10 +104,10 @@ public class OrderControllerTest {
             String status = "DRAFT";
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.valid());
+                            1L, CustomerHelper.valid().getId(), ProductHelper.valid());
             OrderDTO orderDTO2 =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            2L, CustomerHelper.valid(), ProductHelper.valid());
+                            2L, CustomerHelper.valid().getId(), ProductHelper.valid());
             List<OrderDTO> listOrderDTO = new ArrayList<>();
             listOrderDTO.add(orderDTO);
             listOrderDTO.add(orderDTO2);
@@ -131,7 +131,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.valid());
+                            1L, CustomerHelper.valid().getId(), ProductHelper.valid());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
@@ -150,7 +150,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.valid());
+                            1L, CustomerHelper.valid().getId(), ProductHelper.valid());
             when(startNewOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(CustomerUseCase.class),
@@ -171,7 +171,7 @@ public class OrderControllerTest {
             Long productQuantity = 2L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.valid());
+                            1L, CustomerHelper.valid().getId(), ProductHelper.valid());
             when(addProductToOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(ProductUseCase.class),
@@ -204,7 +204,7 @@ public class OrderControllerTest {
             Long productId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.valid());
+                            1L, CustomerHelper.valid().getId(), ProductHelper.valid());
             when(removeProductFromOrderUseCase.execute(
                             any(OrderGateway.class),
                             any(ProductUseCase.class),
@@ -229,7 +229,7 @@ public class OrderControllerTest {
             Long orderId = 1L;
             OrderDTO orderDTO =
                     OrderHelper.createDefaultOrderDTOWithId(
-                            1L, CustomerHelper.valid(), ProductHelper.valid());
+                            1L, CustomerHelper.valid().getId(), ProductHelper.valid());
             when(submitOrderUseCase.execute(any(OrderGateway.class), eq(orderId)))
                     .thenReturn(orderDTO);
 
@@ -255,7 +255,7 @@ public class OrderControllerTest {
                             orderStatus,
                             orderItem,
                             100.00,
-                            CustomerHelper.valid().toDTO(),
+                            CustomerHelper.valid().toDTO().getId(),
                             new PaymentDTO(PaymentStatus.COLLECTED, 100.00));
 
             when(startPreparingOrderUseCase.execute(any(OrderGateway.class), eq(1L)))
@@ -280,7 +280,7 @@ public class OrderControllerTest {
                             orderStatus,
                             orderItem,
                             100.00,
-                            CustomerHelper.valid().toDTO(),
+                            CustomerHelper.valid().toDTO().getId(),
                             new PaymentDTO(PaymentStatus.COLLECTED, 100.00));
 
             when(deliverOrderUseCase.execute(any(OrderGateway.class), eq(1L)))
@@ -305,7 +305,7 @@ public class OrderControllerTest {
                             orderStatus,
                             orderItem,
                             100.00,
-                            CustomerHelper.valid().toDTO(),
+                            CustomerHelper.valid().toDTO().getId(),
                             new PaymentDTO(PaymentStatus.COLLECTED, 100.00));
 
             when(finishPreparingOrderUseCase.execute(any(OrderGateway.class), eq(1L)))

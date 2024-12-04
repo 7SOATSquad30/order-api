@@ -100,7 +100,7 @@ class GetOrderUseCaseTest {
                 DEFAULT_ORDERID, new AddOrderProductRequest(DEFAULT_PRODUCTID, 100L));
 
         // Assert
-        assertThat(result.getCustomer().getName()).isEqualTo(entity.getCustomer().getName());
+        assertThat(result.getCustomerId()).isEqualTo(entity.getCustomerId());
     }
 
     @Test

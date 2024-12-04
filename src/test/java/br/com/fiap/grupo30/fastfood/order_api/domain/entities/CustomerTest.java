@@ -3,7 +3,6 @@ package br.com.fiap.grupo30.fastfood.order_api.domain.entities;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.valueobjects.CPF;
-import br.com.fiap.grupo30.fastfood.order_api.infrastructure.persistence.entities.CustomerEntity;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.CustomerDTO;
 import br.com.fiap.grupo30.fastfood.order_api.utils.CustomerHelper;
 import org.junit.jupiter.api.Test;
@@ -56,18 +55,6 @@ class CustomerTest {
 
         // Assert
         assertThat(CustomerDTO.getName()).isEqualTo("Exemple");
-    }
-
-    @Test
-    void shouldConvertToPersistenceWithId() {
-        // Arrange
-        Customer Customer = CustomerHelper.createDefaultCustomerWithId(1L);
-
-        // Act
-        CustomerEntity CustomerEntity = Customer.toPersistence();
-
-        // Assert
-        assertThat(CustomerEntity.getId()).isEqualTo(1L);
     }
 
     @Test
