@@ -159,7 +159,7 @@ public class ResourceExceptionHandler {
 
     @ExceptionHandler(OrderPaymentIsStillPendingException.class)
     public ResponseEntity<StandardError> invalidCpf(
-        OrderPaymentIsStillPendingException e, HttpServletRequest request) {
+            OrderPaymentIsStillPendingException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         StandardError err = new StandardError();
         err.setTimestamp(Instant.now());
