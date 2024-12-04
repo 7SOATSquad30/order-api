@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.OrderStatus;
-import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Customer;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Order;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.persistence.entities.OrderEntity;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.persistence.repositories.JpaOrderRepository;
@@ -81,9 +80,8 @@ class OrderGatewayTest {
 
             // Act
             Order result = orderGateway.findById(1L);
-            Customer customer = result.getCustomer();
             // Assert
-            assertThat(customer.getName()).isEqualTo("João");
+            assertThat(result.getCustomerId()).isNotNull();
         }
 
         @Test
@@ -110,7 +108,7 @@ class OrderGatewayTest {
             Order result = orderGateway.save(OrderHelper.createDefaultOrder());
 
             // Assert
-            assertThat(result.getCustomer().getName()).isEqualTo("João");
+            assertThat(result.getCustomerId()).isNotNull();
         }
     }
 }

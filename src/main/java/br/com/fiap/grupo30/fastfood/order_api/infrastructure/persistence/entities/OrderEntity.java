@@ -2,7 +2,18 @@ package br.com.fiap.grupo30.fastfood.order_api.infrastructure.persistence.entiti
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.OrderStatus;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Order;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,9 +37,8 @@ public class OrderEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "customer_id")
-    private CustomerEntity customer;
+    @Column(nullable = false)
+    private Long customerId;
 
     @OneToOne(
             mappedBy = "order",
@@ -56,12 +66,12 @@ public class OrderEntity {
     public OrderEntity(
             Long orderId,
             OrderStatus status,
-            CustomerEntity customer,
+            Long customerId,
             PaymentEntity payment,
             Collection<OrderItemEntity> orderItems) {
         this.id = orderId;
         this.status = status;
-        this.customer = customer;
+        this.customerId = customerId;
         this.payment = payment;
         this.items = orderItems;
 
@@ -75,7 +85,7 @@ public class OrderEntity {
         return new Order(
                 id,
                 status,
-                customer.toDomainEntity(),
+                customerId,
                 payment.toDomainEntity(),
                 items.stream()
                         .map(OrderItemEntity::toDomainEntity)

@@ -19,7 +19,7 @@ public class StartNewOrderUseCase {
         }
 
         Customer customer = findCustomerOrCreateAnonymous(customerUseCase, new CPF(customerCpf));
-        Order newOrder = Order.createFor(customer);
+        Order newOrder = Order.createFor(customer.getId());
         return orderGateway.save(newOrder).toDTO();
     }
 
@@ -34,7 +34,10 @@ public class StartNewOrderUseCase {
             } else {
                 Customer newAnonymousCustomer =
                         Customer.create(
-                                "Anonymous", Customer.ANONYMOUS_CPF, "anonymous@fastfood.com");
+                                9999999999L,
+                                "Anonymous",
+                                Customer.ANONYMOUS_CPF,
+                                "anonymous@fastfood.com");
                 return customerUseCase.save(newAnonymousCustomer);
             }
         }

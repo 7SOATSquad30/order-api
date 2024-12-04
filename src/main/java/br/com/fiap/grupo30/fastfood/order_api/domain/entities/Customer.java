@@ -1,7 +1,6 @@
 package br.com.fiap.grupo30.fastfood.order_api.domain.entities;
 
 import br.com.fiap.grupo30.fastfood.order_api.domain.valueobjects.CPF;
-import br.com.fiap.grupo30.fastfood.order_api.infrastructure.persistence.entities.CustomerEntity;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.CustomerDTO;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
@@ -19,8 +18,8 @@ public class Customer {
     private CPF cpf;
     private String email;
 
-    public static Customer create(String name, String cpf, String email) {
-        return new Customer(null, name, new CPF(cpf), email);
+    public static Customer create(Long id, String name, String cpf, String email) {
+        return new Customer(id, name, new CPF(cpf), email);
     }
 
     @Override
@@ -36,10 +35,6 @@ public class Customer {
     }
 
     public CustomerDTO toDTO() {
-        return new CustomerDTO(name, cpf.value(), email);
-    }
-
-    public CustomerEntity toPersistence() {
-        return new CustomerEntity(id, name, cpf.value(), email);
+        return new CustomerDTO(id, name, cpf.value(), email);
     }
 }

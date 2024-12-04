@@ -25,7 +25,7 @@ public class CustomerHelper {
     }
 
     public static Customer createCustomer(Long id, String name, String cpf, String email) {
-        Customer customer = Customer.create(name, cpf, email);
+        Customer customer = Customer.create(id, name, cpf, email);
         customer.setId(id);
         return customer;
     }
