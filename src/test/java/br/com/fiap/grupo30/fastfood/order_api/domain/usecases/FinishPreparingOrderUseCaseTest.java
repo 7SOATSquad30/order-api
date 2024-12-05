@@ -7,12 +7,13 @@ import static org.mockito.Mockito.when;
 import br.com.fiap.grupo30.fastfood.order_api.domain.OrderStatus;
 import br.com.fiap.grupo30.fastfood.order_api.domain.entities.Order;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.customer.CustomerUseCase;
+import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.FinishPreparingOrderUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.order.StartNewOrderUseCase;
+import br.com.fiap.grupo30.fastfood.order_api.domain.usecases.product.ProductUseCase;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.gateways.OrderGateway;
 import br.com.fiap.grupo30.fastfood.order_api.infrastructure.persistence.repositories.JpaOrderRepository;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.controllers.OrderController;
 import br.com.fiap.grupo30.fastfood.order_api.presentation.presenters.dto.OrderDTO;
-import br.com.fiap.grupo30.fastfood.order_api.utils.CustomerHelper;
 import br.com.fiap.grupo30.fastfood.order_api.utils.OrderHelper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,31 +29,30 @@ class FinishPreparingOrderUseCaseTest {
     @Mock private CustomerUseCase customerUseCase;
     @Mock private JpaOrderRepository jpaOrderRepository;
     @Mock private OrderController orderController;
+    @Mock private ProductUseCase productUseCase;
 
     @InjectMocks private StartNewOrderUseCase startNewOrderUseCase;
+    private FinishPreparingOrderUseCase finishPreparingOrderUseCase;
 
     private static final Long DEFAULT_ORDERID = 1L;
-    private static final String DEFAULT_CUSTOMER_CPF = "29375235017";
-    private static final OrderStatus DEFAULT_ORDERSTATUS = OrderStatus.READY;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         startNewOrderUseCase = new StartNewOrderUseCase();
+        finishPreparingOrderUseCase = new FinishPreparingOrderUseCase();
     }
 
     @Test
     void shouldReturnOrderDTOWithCorrectId() {
         // Arrange
-        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
+        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, OrderStatus.PREPARING);
 
+        when(orderGateway.findById(order.getId())).thenReturn(order);
         when(orderGateway.save(any(Order.class))).thenReturn(order);
-        when(customerUseCase.findCustomerByCpf(any(String.class)))
-                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
 
         // Act
-        OrderDTO result =
-                startNewOrderUseCase.execute(orderGateway, customerUseCase, DEFAULT_CUSTOMER_CPF);
+        OrderDTO result = finishPreparingOrderUseCase.execute(orderGateway, order.getId());
 
         // Assert
         assertThat(result.getOrderId()).isEqualTo(order.getId());
@@ -61,32 +61,28 @@ class FinishPreparingOrderUseCaseTest {
     @Test
     void shouldReturnOrderDTOWithCorrectStatus() {
         // Arrange
-        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
+        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, OrderStatus.PREPARING);
 
+        when(orderGateway.findById(order.getId())).thenReturn(order);
         when(orderGateway.save(any(Order.class))).thenReturn(order);
-        when(customerUseCase.findCustomerByCpf(any(String.class)))
-                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
 
         // Act
-        OrderDTO result =
-                startNewOrderUseCase.execute(orderGateway, customerUseCase, DEFAULT_CUSTOMER_CPF);
+        OrderDTO result = finishPreparingOrderUseCase.execute(orderGateway, order.getId());
 
         // Assert
         assertThat(result.getStatus()).isEqualTo(order.getStatus());
     }
 
     @Test
-    void shouldReturnOrderDTOWithCorrectCustomerName() {
+    void shouldReturnOrderDTOWithCorrectCustomer() {
         // Arrange
-        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, DEFAULT_ORDERSTATUS);
+        Order order = OrderHelper.createDefaultOrderStatus(DEFAULT_ORDERID, OrderStatus.PREPARING);
 
+        when(orderGateway.findById(order.getId())).thenReturn(order);
         when(orderGateway.save(any(Order.class))).thenReturn(order);
-        when(customerUseCase.findCustomerByCpf(any(String.class)))
-                .thenReturn(CustomerHelper.createDefaultCustomerWithId(order.getCustomerId()));
 
         // Act
-        OrderDTO result =
-                startNewOrderUseCase.execute(orderGateway, customerUseCase, DEFAULT_CUSTOMER_CPF);
+        OrderDTO result = finishPreparingOrderUseCase.execute(orderGateway, order.getId());
 
         // Assert
         assertThat(result.getCustomerId()).isEqualTo(order.getCustomerId());
